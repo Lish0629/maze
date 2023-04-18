@@ -16,6 +16,8 @@ namespace maze
             createMaze.Create();
             createMaze.Disp();
             createMaze.Find();
+            createMaze.DispFind();
+            createMaze.Disp();
         }
         
     }
@@ -24,13 +26,18 @@ namespace maze
     {
         public int length;//定义迷宫长度
         public char[,] maze;//创造迷宫结点
+        public int[,] found;
+        public int final;
         Random rand=new Random();//随机数
         public CreateMaze(int len)
         {
             length = len;
             maze = new char[length,length];
+            found = new int[length, length];
         }//迷宫类的初始化
-        
+        Queue<MazePoint> Mazelist = new Queue<MazePoint>();
+        Queue<MazePoint> Mazelisted = new Queue<MazePoint>();
+        Stack<MazePoint> Mazelisted1 = new Stack<MazePoint>();
         public void Create()//创造迷宫
         {
             Console.WriteLine(length);
@@ -40,7 +47,7 @@ namespace maze
                 {
                     if ((x == 0 && y == 0)||(x==length-1&&y==length-1))//避免首尾出现障碍
                         continue;
-                    if (rand.Next(-10, 25) < 0)
+                    if (rand.Next(-10, 20) < 0)
                     {
                         maze[y, x] = '*';
                     }
@@ -71,67 +78,96 @@ namespace maze
         {
             MazePoint point = new MazePoint();
             point.Start();
-            Queue<MazePoint> Mazelist = new Queue<MazePoint>();
-            Queue<MazePoint> Mazelisted = new Queue<MazePoint>();
-            int num=0;
+            found[point.y, point.x] = 1;
+            /*Queue<MazePoint> Mazelist = new Queue<MazePoint>();
+            Queue<MazePoint> Mazelisted = new Queue<MazePoint>();*/
+            int num=1;
+            Mazelist.Enqueue(point);
             while (true)
             {
-                if(Mazelist.Count > 0)
+                
+                if(Mazelist.Count > 0&&num!=0)
                 {
                     point = Mazelist.Dequeue();
+                    if(point.x == length - 1 && point.y == length - 1)
+                    {
+                        final = point.num;
+                        Mazelisted1.Push(point);
+                        Console.WriteLine("!");
+                        break;
+                    }
                 }
-                Mazelist.Enqueue(point);
+                    
+                
                 MazePoint nextPoint = new MazePoint();
 
                 nextPoint.x = point.x + 1;
                 nextPoint.y = point.y;
-                if ((nextPoint.y >= 0 && nextPoint.y < length - 1) && (nextPoint.x >= 0 && nextPoint.x < length - 1) && maze[nextPoint.y, nextPoint.x] == '\0')
+                if ((nextPoint.y >= 0 && nextPoint.y <= length - 1) && (nextPoint.x >= 0 && nextPoint.x <= length - 1) && maze[nextPoint.y, nextPoint.x] == '\0' && found[nextPoint.y, nextPoint.x]!=1)
                 {
                     nextPoint.pre = point.num;
                     nextPoint.num = num++;
                     Mazelist.Enqueue(nextPoint);
-                    
+                    found[nextPoint.y, nextPoint.x] = 1;
                 }
                 nextPoint = new MazePoint();
                 nextPoint.x = point.x - 1;
                 nextPoint.y = point.y;
-                if ((nextPoint.y >= 0 && nextPoint.y < length - 1) && (nextPoint.x >= 0 && nextPoint.x < length - 1) && maze[nextPoint.y, nextPoint.x] == '\0')
+                if ((nextPoint.y >= 0 && nextPoint.y <= length - 1) && (nextPoint.x >= 0 && nextPoint.x <= length - 1) && maze[nextPoint.y, nextPoint.x] == '\0' && found[nextPoint.y, nextPoint.x] != 1)
                 {
                     nextPoint.pre = point.num;
                     nextPoint.num = num++;
                     Mazelist.Enqueue(nextPoint);
-                    
+                    found[nextPoint.y, nextPoint.x] = 1;
                 }
                 nextPoint = new MazePoint();
                 nextPoint.x = point.x;
                 nextPoint.y = point.y + 1;
-                if ((nextPoint.y >= 0 && nextPoint.y < length - 1) && (nextPoint.x >= 0 && nextPoint.x < length - 1) && maze[nextPoint.y, nextPoint.x] == '\0')
+                if ((nextPoint.y >= 0 && nextPoint.y <= length - 1) && (nextPoint.x >= 0 && nextPoint.x <= length - 1) && maze[nextPoint.y, nextPoint.x] == '\0' && found[nextPoint.y, nextPoint.x] != 1)
                 {
                     nextPoint.pre = point.num;
                     nextPoint.num = num++;
                     Mazelist.Enqueue(nextPoint);
+                    found[nextPoint.y, nextPoint.x] = 1;
                 }
                 nextPoint = new MazePoint();
                 nextPoint.x = point.x;
                 nextPoint.y = point.y - 1;
-                if ((nextPoint.y >= 0 && nextPoint.y < length - 1) && (nextPoint.x >= 0 && nextPoint.x < length - 1) && maze[nextPoint.y, nextPoint.x] == '\0')
+                if ((nextPoint.y >= 0 && nextPoint.y <= length - 1) && (nextPoint.x >= 0 && nextPoint.x <= length - 1) && maze[nextPoint.y, nextPoint.x] == '\0' && found[nextPoint.y, nextPoint.x] != 1)
                 {
                     nextPoint.pre = point.num;
                     nextPoint.num = num++;
                     Mazelist.Enqueue(nextPoint);
+                    found[nextPoint.y, nextPoint.x] = 1;
                 }
-                Mazelisted.Enqueue(Mazelist.Dequeue());
+                //Mazelisted.Enqueue(Mazelist.Dequeue());
+                Mazelisted1.Push(point);
                 if (Mazelist.Count == 0)
                 {
                     break;
                 }
-                Console.WriteLine("ss");
+                //Console.WriteLine("YES");
             }
             Console.WriteLine("END");
 
 
         }
-        public void DispFind() { }//输出
+        public void DispFind()
+        {
+            int numed= final;
+            while (Mazelisted1.Count!=0)
+            {
+                MazePoint point = Mazelisted1.Pop();
+                if (point.num == final)
+                {
+                    Console.Write($"[{point.y},{point.x}]");
+                    maze[point.y, point.x] = '^';
+                    final= point.pre;
+                }
+
+            }
+            Console.WriteLine("\n");
+        }
     }
     public class MazePoint
     {
@@ -145,33 +181,6 @@ namespace maze
             pre = 0;
             x = 0;
             y = 0;
-        }
-    }
-    public class MazeList
-    {
-        public int front, rear;
-        public int MaxSize=100;
-        public MazePoint[] data;
-        public MazeList()
-        {
-            front = -1;
-            rear = -1;
-            data=new MazePoint[MaxSize];
-        }
-        public bool Push(MazePoint mazepoint)
-        {
-            if (rear == MaxSize - 1)
-                return false;
-            rear++;
-            data[rear] = mazepoint;
-            return true;
-        }
-        public bool Pop(ref MazePoint mazePoint)
-        {
-            if(front == MaxSize - 1) return false;
-            front++;
-            mazePoint = data[front];
-            return true;
         }
     }
 }
