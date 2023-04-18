@@ -71,100 +71,65 @@ namespace maze
         {
             MazePoint point = new MazePoint();
             point.Start();
-            char direction='d';
-            bool t = true;
-            while (t)
+            Queue<MazePoint> Mazelist = new Queue<MazePoint>();
+            Queue<MazePoint> Mazelisted = new Queue<MazePoint>();
+            int num=0;
+            while (true)
             {
-                MazePoint nextPoint = new MazePoint();
-                //direction=Convert.ToChar(Console.Read());
-                //if (point.x == length - 1 && point.y == length - 1)
-                    //return true;
-                switch (direction)
+                if(Mazelist.Count > 0)
                 {
-                    case 'd':
-                        nextPoint.x = point.x+1;
-                        nextPoint.y = point.y;
-                        if (maze[nextPoint.y,nextPoint.x]==0)
-                        {
-                            Console.Write("YES");
-                            Console.WriteLine($"[{nextPoint.x},{nextPoint.y}]\t");
-                            Console.Read();
-                            point.x=nextPoint.x ;
-                            point.y=nextPoint.y ;
-                        }
-                        else
-                        {
-                            Console.Write("NO");
-                            Console.WriteLine($"[{nextPoint.x},{nextPoint.y}]\t");
-                            direction = 's';
-                            Console.Read ();
-                            
-                        }
-                        break;
-                    case 'a':
-                        nextPoint.x = point.x -1;
-                        nextPoint.y = point.y;
-                        if (maze[nextPoint.y, nextPoint.x] == 0)
-                        {
-                            Console.Write("YES");
-                            Console.WriteLine($"[{nextPoint.x},{nextPoint.y}]\t");
-                            Console.Read();
-                            point.x = nextPoint.x;
-                            point.y = nextPoint.y;
-                        }
-                        else
-                        {
-                            Console.Write("NO");
-                            Console.WriteLine($"[{nextPoint.x},{nextPoint.y}]\t");
-                            direction = 'w';
-                            Console.Read();
-                        }
-                        break;
-                    case 'w':
-                        nextPoint.x = point.x ;
-                        nextPoint.y = point.y-1;
-                        if (maze[nextPoint.y, nextPoint.x] == 0)
-                        {
-                            Console.Write("YES");
-                            Console.WriteLine($"[{nextPoint.x},{nextPoint.y}]\t");
-                            Console.Read();
-                            point.x = nextPoint.x;
-                            point.y = nextPoint.y;
-                        }
-                        else
-                        {
-                            Console.Write("NO");
-                            Console.WriteLine($"[{nextPoint.x},{nextPoint.y}]\t");
-                            direction = 'd';
-                            Console.Read();
-                        }
-                        break;
-                    case 's':
-                        nextPoint.x = point.x ;
-                        nextPoint.y = point.y+1;
-                        if (maze[nextPoint.y, nextPoint.x] == 0)
-                        {
-                            Console.Write("YES");
-                            Console.WriteLine($"[{nextPoint.x},{nextPoint.y}]\t");
-                            Console.Read();
-                            point.x = nextPoint.x;
-                            point.y = nextPoint.y;
-                        }
-                        else
-                        {
-                            Console.Write("NO");
-                            Console.WriteLine($"[{nextPoint.x},{nextPoint.y}]\t");
-                            direction = 'a';
-                            Console.Read();
-                        }
-                        break;
-                    default:
-                        t = false; 
-                        break;
-                        //return t;
-
+                    point = Mazelist.Dequeue();
                 }
+                Mazelist.Enqueue(point);
+                MazePoint nextPoint = new MazePoint();
+
+                nextPoint.x = point.x + 1;
+                nextPoint.y = point.y;
+                if ((nextPoint.y >= 0 && nextPoint.y < length - 1) && (nextPoint.x >= 0 && nextPoint.x < length - 1) && maze[nextPoint.y, nextPoint.x] == '\0')
+                {
+                    nextPoint.pre = point.num;
+                    nextPoint.num = num++;
+                    Mazelist.Enqueue(nextPoint);
+                    
+                }
+                nextPoint = new MazePoint();
+                nextPoint.x = point.x - 1;
+                nextPoint.y = point.y;
+                if ((nextPoint.y >= 0 && nextPoint.y < length - 1) && (nextPoint.x >= 0 && nextPoint.x < length - 1) && maze[nextPoint.y, nextPoint.x] == '\0')
+                {
+                    nextPoint.pre = point.num;
+                    nextPoint.num = num++;
+                    Mazelist.Enqueue(nextPoint);
+                    
+                }
+                nextPoint = new MazePoint();
+                nextPoint.x = point.x;
+                nextPoint.y = point.y + 1;
+                if ((nextPoint.y >= 0 && nextPoint.y < length - 1) && (nextPoint.x >= 0 && nextPoint.x < length - 1) && maze[nextPoint.y, nextPoint.x] == '\0')
+                {
+                    nextPoint.pre = point.num;
+                    nextPoint.num = num++;
+                    Mazelist.Enqueue(nextPoint);
+                }
+                nextPoint = new MazePoint();
+                nextPoint.x = point.x;
+                nextPoint.y = point.y - 1;
+                if ((nextPoint.y >= 0 && nextPoint.y < length - 1) && (nextPoint.x >= 0 && nextPoint.x < length - 1) && maze[nextPoint.y, nextPoint.x] == '\0')
+                {
+                    nextPoint.pre = point.num;
+                    nextPoint.num = num++;
+                    Mazelist.Enqueue(nextPoint);
+                }
+                Mazelisted.Enqueue(Mazelist.Dequeue());
+                if (Mazelist.Count == 0)
+                {
+                    break;
+                }
+                Console.WriteLine("ss");
             }
+            Console.WriteLine("END");
+
+
         }
         public void DispFind() { }//输出
     }
@@ -173,9 +138,11 @@ namespace maze
         public int x;
         public int y;
         public int num;
+        public int pre;
         public void Start()
         {
             num = 0;
+            pre = 0;
             x = 0;
             y = 0;
         }
